@@ -1,5 +1,3 @@
-
-import logging
 from pprint import pprint
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 
@@ -14,8 +12,6 @@ def user_address():
         else:
             print("Invalid address type. Please choose from legacy, p2sh-segwit, or bech32.")
 
-logging.basicConfig()
-logging.getLogger("BitcoinRPC").setLevel(logging.DEBUG)
 
 # rpc_user and rpc_password are set in the bitcoin.conf file
 rpc_user = "123456"  
@@ -29,7 +25,26 @@ print("-------------------------------------------------------------------------
 print("Block Count: ", block_count)
 print("-------------------------------------------------------------------------")
 
+#retrieve block details
+#1.get blockcount using block count
+#2.use the blockhash to get the block details.
+blockhash = rpc_connection.getblockhash(block_count)
 
+block = rpc_connection.getblock(blockhash)
+
+print("---------------------------------------------------------------")
+print("BLOCK Hash: ", blockhash)
+print("-------------")
+print("Number of Transaction.: ", block["nTx"])
+print("Block Confirmations...: ", block["confirmations"])
+print("Merkle Root..: ", block['merkleroot'])
+print("Block Size...: ", block['size'])
+print("Block Weight.: ", block['weight'])
+print("Nonce........: ", block['nonce'])
+print("Difficulty...: ", block['difficulty'])
+print("---------------------------------------------------------------")
+
+# import pdb; pdb.set_trace()
 # Create a wallet named "testwallet15"
 wallet_name = "testwallet80"
 new_wallet = rpc_connection.createwallet(wallet_name)
@@ -37,8 +52,8 @@ new_wallet = rpc_connection.createwallet(wallet_name)
 # Specify the wallet file in the URI path for subsequent RPC calls
 wallet_connection = AuthServiceProxy(f"http://{rpc_user}:{rpc_password}@127.0.0.1:18332/wallet/{wallet_name}", timeout=170)
 
-# Retrieve a new address from the newly created wallet
-wallet_address = wallet_connection.getnewaddress("GenerateAddress", user_address())
+# Retrieve a new address from the newly created wallet.
+wallet_address = wallet_connection.getnewaddress("GenerateAddress",user_address())
 wallet_info = wallet_connection.getwalletinfo()
 print("-------------------------------------------------------------------------")
 print("Wallet Address: ", wallet_address)
@@ -57,10 +72,10 @@ print("Wallet Balance:",wallet_balance)
 print("-------------------------------------------------------------------------------")
 
 #generate blocks
-
+# import pdb; pdb.set_trace()
 blocks = wallet_connection.generatetoaddress(101, wallet_address)
 print("-------------------------------------------------------------------------------")
-print("Blocks:",blocks)
+print("Generating Blocks")
 print("-------------------------------------------------------------------------------")
 
 #new balance 
@@ -76,24 +91,21 @@ print("---------------------------------------------------------------")
 print("New Block Count:", new_block_count)
 print("---------------------------------------------------------------\n")
 
-#Lets a create raw transaction
-
-
-# raw_transaction=wallet_connection.createrawtransaction()
-# import pdb; pdb.set_trace()
-# transaction_id = wallet_connection.sendtoaddress(wallet_address, 0.00000001)
-# transaction_id = wallet_connection.sendtoaddress(wallet_address, 0.1, "", "", True, True, 0.00001)
-
-# print("---------------------------------------------------------------")
-# print("Transaction_ID:", transaction_id)
-# print("---------------------------------------------------------------\n")
-
-
-# # private_key_connection = AuthServiceProxy(f"http://{rpc_user}:{rpc_password}@127.0.0.1:18332/dumpprivkey/{wallet_address}")
-# #Retrieve Pubkey for a wallet
-# # private_key = wallet_connection.dumpprivkey(wallet_address)
-# # print(f"Wallet Privatekey: {private_key}")
-
-# # Retrieve the best block hash
-# best_block_hash = wallet_connection.getbestblockhash()
-# print(f"Best Block Hash: {best_block_hash}")
+#Create a Transaction
+#1.Use the generated adress above as the sender
+#2.Generate a send to Address which is the receive address
+#3.set transaction fees (this is not necessary, i only use it to mitigate the fallback-fee error)
+#4.Fetch the UTXO associated with that transaction.
+wallet_connection.settxfee(0.00001)
+send_transaction = wallet_connection.sendtoaddress(wallet_address, 0.01, "donation" "sean's outpost")
+print("-----------------")
+print("Transaction Id:",send_transaction)
+print("-----------------")
+transaction = wallet_connection.gettransaction(send_transaction)
+print("------------------------Transaction Details-----------------------------------")
+print("-------------------")
+print("Address:",transaction["details"][0]["address"])
+print("category:",transaction["details"][0]["category"])
+print("amount:",transaction["details"][0]["amount"])
+print("fee:",transaction["details"][0]["fee"])
+print("-------------------")
