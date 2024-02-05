@@ -113,6 +113,11 @@ print("--------------------------------------------------------------------")
 pprint(raw_transaction_details)
 print("----------------------------------------------------------------------")
 
+
+
+
+
+
 #get transaction id for the input refrence
 # tx_id = raw_transaction_details["vin"][0]['txid']
 # new_transaction = wallet_connection.getrawtransaction(tx_id, True)
