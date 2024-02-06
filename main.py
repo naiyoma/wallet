@@ -1,6 +1,6 @@
 from pprint import pprint
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
-from hex import parse_transactions
+from week2.hex import parse_transactions
 
 
 def user_address():
