@@ -6,6 +6,7 @@ from unittest.mock import Mock
 from hex import parse_transactions
 
 
+
 class TestParseTransaction(unittest.TestCase):
     def mock_transaction(self,hex_data=None):
         with open("mock_data.json", "r") as file:
