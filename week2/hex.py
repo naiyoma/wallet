@@ -24,7 +24,8 @@ def decode_transaction(hex_string):
     raw_bytes = bytes.fromhex(hex_string)
     # Parse transaction fields
     version = raw_bytes[0:4]
-    num_inputs = int.from_bytes(raw_bytes[6:7], byteorder='little')  # Corrected indexing and conversion to integer
+    #this is for a segwit transaction for non-segwit [4:5]
+    num_inputs = int.from_bytes(raw_bytes[6:7], byteorder='little')  
     inputs = []
 
     # Parse inputs
@@ -106,7 +107,7 @@ def deserialize_transaction(transaction):
 
     return deserialized_transaction
 
-# Example usage
+
 hex_transaction = "02000000000101c2b36b67a8e447765649e771bcb0450cfd06893025d80bac7a13ec3af7c4c77c0100000017160014fdde9936089bd0b1326fa954d0cdd8c831287cc4fdffffff020000000000000000066a04000102037fab402500000000225120f7ecd79ad135565bf182356a5aaa0b5fa814e9bfc32a931cb65825237f4eb87202473044022031db589b23dea0cf97287745f4cb697314de5a13cc6768dcfab7da4828dee52d022053571793abb91ba5d8c88a90d142854ce15eab5b6d980ed53f4884e62b86beef012102dfbd6e82b24409bb7bb94576bdfdf2ef22cc6f781efc337add8d2b05becca71b00000000"
 transaction = decode_transaction(hex_transaction)
 deserialized_transaction = deserialize_transaction(transaction)
